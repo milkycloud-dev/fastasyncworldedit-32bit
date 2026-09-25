@@ -1,0 +1,57 @@
+name: Build 32-bit
+
+on:
+  push:
+    branches: [32bit]
+    tags: ["*-32bit*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - name: Build
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon --stacktrace -Dorg.gradle.configureondemand=false :worldedit-bukkit:shadowJar
+          mkdir -p dist
+          cp worldedit-bukkit/build/libs/FastAsyncWorldEdit-Paper-*.jar dist/FastAsyncWorldEdit-32bit-2.15.4.jar
+          ls -l dist
+
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: fastasyncworldedit-32bit
+          path: dist/*.jar
+          if-no-files-found: error
+
+      - name: Release notes
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          awk -v v="$GITHUB_REF_NAME" '/^## / {p = ($2 == v); next} p' CHANGES-32bit.md > notes.md
+          test -s notes.md || echo "Release $GITHUB_REF_NAME" > notes.md
+          cat notes.md
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: FastAsyncWorldEdit 32-bit ${{ github.ref_name }}
+          body_path: notes.md
+          files: dist/*.jar
+          fail_on_unmatched_files: true

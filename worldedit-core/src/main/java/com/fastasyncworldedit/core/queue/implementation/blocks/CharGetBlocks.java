@@ -35,16 +35,16 @@ public abstract class CharGetBlocks extends CharBlocks implements IChunkGet {
     }
 
     @Override
-    public char[] update(int layer, char[] data, boolean aggressive) {
+    public int[] update(int layer, int[] data, boolean aggressive) {
         if (data == null) {
-            data = new char[4096];
+            data = new int[4096];
         }
-        Arrays.fill(data, (char) BlockTypesCache.ReservedIDs.AIR);
+        Arrays.fill(data, (int) BlockTypesCache.ReservedIDs.AIR);
         return data;
     }
 
     @Override
-    protected char defaultOrdinal() {
+    protected int defaultOrdinal() {
         return BlockTypesCache.ReservedIDs.AIR;
     }
 

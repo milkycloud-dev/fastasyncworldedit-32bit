@@ -3,7 +3,7 @@ package com.fastasyncworldedit.core.math.heightmap;
 public class ArrayHeightMap extends ScalableHeightMap {
 
     // The heights
-    private final char[][] height;
+    private final int[][] height;
     // The height map width/length
     private final int width;
     private final int length;
@@ -13,14 +13,14 @@ public class ArrayHeightMap extends ScalableHeightMap {
     private double rz;
 
     /**
-     * New height map represented by char array[][] of values x*z to be scaled given a set size.
+     * New height map represented by int array[][] of values x*z to be scaled given a set size.
      * Limited 0->65535
      *
      * @param height array of height values
      * @param scale  "scale" of the heightmap. Typically the normalised height of the world, or the maximum possible value (256
      *               for a PNG heightmap)
      */
-    public ArrayHeightMap(char[][] height, double scale) {
+    public ArrayHeightMap(int[][] height, double scale) {
         setSize(5);
         this.height = height;
         this.width = height.length;

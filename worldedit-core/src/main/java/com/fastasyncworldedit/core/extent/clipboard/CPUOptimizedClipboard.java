@@ -23,7 +23,7 @@ import java.util.Map;
 public class CPUOptimizedClipboard extends LinearClipboard {
 
     private BiomeType[] biomes = null;
-    private final char[] states;
+    private final int[] states;
 
     private final HashMap<IntTriple, CompoundTag> nbtMapLoc;
     private final HashMap<Integer, CompoundTag> nbtMapIndex;
@@ -31,7 +31,7 @@ public class CPUOptimizedClipboard extends LinearClipboard {
 
     public CPUOptimizedClipboard(Region region) {
         super(region.getDimensions(), region.getMinimumPoint());
-        this.states = new char[getVolume()];
+        this.states = new int[getVolume()];
         nbtMapLoc = new HashMap<>();
         nbtMapIndex = new HashMap<>();
     }
@@ -141,7 +141,7 @@ public class CPUOptimizedClipboard extends LinearClipboard {
 
     @Override
     public BlockState getBlock(int index) {
-        char ordinal = states[index];
+        int ordinal = states[index];
         return BlockState.getFromOrdinal(ordinal);
     }
 
@@ -199,7 +199,7 @@ public class CPUOptimizedClipboard extends LinearClipboard {
 
     @Override
     public <B extends BlockStateHolder<B>> boolean setBlock(int index, B block) {
-        char ordinal = block.getOrdinalChar();
+        int ordinal = block.getOrdinalChar();
         if (ordinal == BlockTypesCache.ReservedIDs.__RESERVED__) {
             ordinal = BlockTypesCache.ReservedIDs.AIR;
         }

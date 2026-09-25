@@ -184,7 +184,7 @@ public class WrapperChunk<T extends IChunk> implements IChunk {
     }
 
     @Override
-    public void setBlocks(final int layer, final char[] data) {
+    public void setBlocks(final int layer, final int[] data) {
         getWrapped().setBlocks(layer, data);
     }
 
@@ -234,12 +234,12 @@ public class WrapperChunk<T extends IChunk> implements IChunk {
     }
 
     @Override
-    public void setLightLayer(final int layer, final char[] toSet) {
+    public void setLightLayer(final int layer, final int[] toSet) {
         getWrapped().setLightLayer(layer, toSet);
     }
 
     @Override
-    public void setSkyLightLayer(final int layer, final char[] toSet) {
+    public void setSkyLightLayer(final int layer, final int[] toSet) {
         getWrapped().setSkyLightLayer(layer, toSet);
     }
 
@@ -279,12 +279,12 @@ public class WrapperChunk<T extends IChunk> implements IChunk {
     }
 
     @Override
-    public char[][] getLight() {
+    public int[][] getLight() {
         return getWrapped().getLight();
     }
 
     @Override
-    public char[][] getSkyLight() {
+    public int[][] getSkyLight() {
         return getWrapped().getSkyLight();
     }
 
@@ -409,12 +409,12 @@ public class WrapperChunk<T extends IChunk> implements IChunk {
     }
 
     @Override
-    public char[] load(final int layer) {
+    public int[] load(final int layer) {
         return getWrapped().load(layer);
     }
 
     @Override
-    public @Nullable char[] loadIfPresent(final int layer) {
+    public @Nullable int[] loadIfPresent(final int layer) {
         return getWrapped().loadIfPresent(layer);
     }
 
@@ -558,12 +558,12 @@ public class WrapperChunk<T extends IChunk> implements IChunk {
     }
 
     @Override
-    public void setLightingToGet(final char[][] lighting, final int startSectionIndex, final int endSectionIndex) {
+    public void setLightingToGet(final int[][] lighting, final int startSectionIndex, final int endSectionIndex) {
         getWrapped().setLightingToGet(lighting, startSectionIndex, endSectionIndex);
     }
 
     @Override
-    public void setSkyLightingToGet(final char[][] lighting, final int startSectionIndex, final int endSectionIndex) {
+    public void setSkyLightingToGet(final int[][] lighting, final int startSectionIndex, final int endSectionIndex) {
         getWrapped().setSkyLightingToGet(lighting, startSectionIndex, endSectionIndex);
     }
 

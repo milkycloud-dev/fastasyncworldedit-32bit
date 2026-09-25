@@ -39,9 +39,9 @@ public class CharFilterBlock extends ChunkFilterBlock {
     private int minLayer;
     protected CharGetBlocks get;
     protected IChunkSet set;
-    protected char[] getArr;
+    protected int[] getArr;
     @Nullable
-    protected char[] setArr;
+    protected int[] setArr;
     protected SetDelegate delegate;
     // local
     protected int layer;
@@ -233,7 +233,7 @@ public class CharFilterBlock extends ChunkFilterBlock {
         return chunkZ;
     }
 
-    public final char getOrdinalChar() {
+    public final int getOrdinalChar() {
         return getArr[index];
     }
 
@@ -244,7 +244,7 @@ public class CharFilterBlock extends ChunkFilterBlock {
 
     @Override
     public void setOrdinal(int ordinal) {
-        delegate.set(this, (char) ordinal);
+        delegate.set(this, (int) ordinal);
     }
 
     @Override
@@ -389,7 +389,7 @@ public class CharFilterBlock extends ChunkFilterBlock {
     Extent
      */
     @Override
-    public char getOrdinalChar(Extent orDefault) {
+    public int getOrdinalChar(Extent orDefault) {
         return getOrdinalChar();
     }
 
@@ -434,7 +434,7 @@ public class CharFilterBlock extends ChunkFilterBlock {
     @ApiStatus.Internal
     protected interface SetDelegate {
 
-        void set(@Nonnull CharFilterBlock block, char value);
+        void set(@Nonnull CharFilterBlock block, int value);
 
     }
 

@@ -320,7 +320,7 @@ public class DelegateBlockVector3 extends BlockVector3 {
     }
 
     @Override
-    public char getOrdinalChar(Extent orDefault) {
+    public int getOrdinalChar(Extent orDefault) {
         return parent.getOrdinalChar(orDefault);
     }
 

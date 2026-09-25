@@ -111,7 +111,7 @@ public interface IChunkGet extends IBlocks, Trimable, InputExtent, ITileInput {
      * @param startSectionIndex lowest section index
      * @param endSectionIndex   highest section index
      */
-    void setLightingToGet(char[][] lighting, int startSectionIndex, int endSectionIndex);
+    void setLightingToGet(int[][] lighting, int startSectionIndex, int endSectionIndex);
 
     /**
      * Flush the sky lighting array (section*blocks) to the chunk GET between the given section indices. Negative allowed.
@@ -120,7 +120,7 @@ public interface IChunkGet extends IBlocks, Trimable, InputExtent, ITileInput {
      * @param startSectionIndex lowest section index
      * @param endSectionIndex   highest section index
      */
-    void setSkyLightingToGet(char[][] lighting, int startSectionIndex, int endSectionIndex);
+    void setSkyLightingToGet(int[][] lighting, int startSectionIndex, int endSectionIndex);
 
     void setHeightmapToGet(HeightMapType type, int[] data);
 

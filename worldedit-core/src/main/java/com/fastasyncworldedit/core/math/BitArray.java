@@ -121,14 +121,14 @@ public final class BitArray {
         int arrI = 0;
         for (int i = 0; i < dataLength; i++) {
             long l = data[i];
-            char lastVal;
+            int lastVal;
             for (; localStart <= maxSeqLocIndex; localStart += bitsPerEntry) {
-                lastVal = (char) (l >>> localStart & maxEntryValue);
+                lastVal = (int) (l >>> localStart & maxEntryValue);
                 buffer[arrI++] = lastVal;
             }
             if (localStart < 64) {
                 if (i != dataLength - 1) {
-                    lastVal = (char) (l >>> localStart);
+                    lastVal = (int) (l >>> localStart);
                     localStart -= maxSeqLocIndex;
                     l = data[i + 1];
                     int localShift = bitsPerEntry - localStart;
@@ -143,7 +143,7 @@ public final class BitArray {
         return buffer;
     }
 
-    public char[] toRaw(char[] buffer) {
+    public int[] toRawLegacy(int[] buffer) {
         final long[] data = this.data;
         final int dataLength = longLen;
         final int bitsPerEntry = this.bitsPerEntry;
@@ -154,14 +154,14 @@ public final class BitArray {
         int arrI = 0;
         for (int i = 0; i < dataLength; i++) {
             long l = data[i];
-            char lastVal;
+            int lastVal;
             for (; localStart <= maxSeqLocIndex; localStart += bitsPerEntry) {
-                lastVal = (char) (l >>> localStart & maxEntryValue);
+                lastVal = (int) (l >>> localStart & maxEntryValue);
                 buffer[arrI++] = lastVal;
             }
             if (localStart < 64) {
                 if (i != dataLength - 1) {
-                    lastVal = (char) (l >>> localStart);
+                    lastVal = (int) (l >>> localStart);
                     localStart -= maxSeqLocIndex;
                     l = data[i + 1];
                     int localShift = bitsPerEntry - localStart;

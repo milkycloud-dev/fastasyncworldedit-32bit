@@ -851,7 +851,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
                 if (!set.hasSection(layer)) {
                     continue;
                 }
-                char[] arr = Objects.requireNonNull(set.loadIfPresent(layer)); // This shouldn't be null if above is true
+                int[] arr = Objects.requireNonNull(set.loadIfPresent(layer)); // This shouldn't be null if above is true
                 int indexY = 0;
                 for (int y = 0; y < 16; y++, indexY += 256) { // For each y layer within a chunk section
                     int index;
@@ -935,7 +935,7 @@ public class CuboidRegion extends AbstractRegion implements FlatRegion {
                 if (!set.hasSection(layer)) {
                     continue;
                 }
-                char[] arr = Objects.requireNonNull(set.loadIfPresent(layer)); // This shouldn't be null if above is true
+                int[] arr = Objects.requireNonNull(set.loadIfPresent(layer)); // This shouldn't be null if above is true
                 if (!(trimX || trimZ)) {
                     continue;
                 }

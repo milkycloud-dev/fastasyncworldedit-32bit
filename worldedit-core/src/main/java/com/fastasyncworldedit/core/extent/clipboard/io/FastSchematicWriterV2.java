@@ -133,8 +133,8 @@ public class FastSchematicWriterV2 implements ClipboardWriter {
             NBTOutputStream tilesOut = new NBTOutputStream(new LZ4BlockOutputStream(tilesCompressed));
 
             List<Integer> paletteList = new ArrayList<>();
-            char[] palette = new char[BlockTypesCache.states.length];
-            Arrays.fill(palette, Character.MAX_VALUE);
+            int[] palette = new int[BlockTypesCache.states.length];
+            Arrays.fill(palette, Integer.MAX_VALUE);
             int paletteMax = 0;
             int numTiles = 0;
             Clipboard finalClipboard;
@@ -175,10 +175,10 @@ public class FastSchematicWriterV2 implements ClipboardWriter {
                 if (ordinal == BlockTypesCache.ReservedIDs.__RESERVED__) {
                     ordinal = BlockTypesCache.ReservedIDs.AIR;
                 }
-                char value = palette[ordinal];
-                if (value == Character.MAX_VALUE) {
+                int value = palette[ordinal];
+                if (value == Integer.MAX_VALUE) {
                     int size = paletteMax++;
-                    palette[ordinal] = value = (char) size;
+                    palette[ordinal] = value = (int) size;
                     paletteList.add(ordinal);
                 }
                 blocksOut.writeVarInt(value);

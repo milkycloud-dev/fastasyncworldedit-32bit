@@ -98,9 +98,9 @@ public final class BitArrayUnstretched {
         int arrI = 0;
         for (int i = 0; i < longLen; i++) {
             long l = data[i];
-            char lastVal;
+            int lastVal;
             for (; localStart <= maxSeqLocIndex && arrI < buffer.length; localStart += bitsPerEntry) {
-                lastVal = (char) (l >>> localStart & this.mask);
+                lastVal = (int) (l >>> localStart & this.mask);
                 buffer[arrI++] = lastVal;
             }
             localStart = 0;
@@ -108,7 +108,7 @@ public final class BitArrayUnstretched {
         return buffer;
     }
 
-    public char[] toRaw(char[] buffer) {
+    public int[] toRawLegacy(int[] buffer) {
         final long[] data = this.data;
         final int bitsPerEntry = this.bitsPerEntry;
         final int maxSeqLocIndex = this.maxSeqLocIndex;
@@ -117,9 +117,9 @@ public final class BitArrayUnstretched {
         int arrI = 0;
         for (int i = 0; i < longLen; i++) {
             long l = data[i];
-            char lastVal;
+            int lastVal;
             for (; localStart <= maxSeqLocIndex && arrI < buffer.length; localStart += bitsPerEntry) {
-                lastVal = (char) (l >>> localStart & this.mask);
+                lastVal = (int) (l >>> localStart & this.mask);
                 buffer[arrI++] = lastVal;
             }
             localStart = 0;

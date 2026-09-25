@@ -139,7 +139,7 @@ public class FastSchematicWriterV3 implements ClipboardWriter {
                         return block.toImmutableState();
                     },
                     block -> {
-                        char ordinal = block.getOrdinalChar();
+                        int ordinal = block.getOrdinalChar();
                         if (ordinal == BlockTypesCache.ReservedIDs.__RESERVED__) {
                             ordinal = BlockTypesCache.ReservedIDs.AIR;
                         }
@@ -167,7 +167,7 @@ public class FastSchematicWriterV3 implements ClipboardWriter {
         this.writePalette(
                 biomes, BiomeType.REGISTRY.size(),
                 pos -> pos.getBiome(clipboard),
-                biome -> (char) biome.getInternalId(),
+                biome -> (int) biome.getInternalId(),
                 BiomeType::id,
                 clipboard
         );
@@ -217,7 +217,7 @@ public class FastSchematicWriterV3 implements ClipboardWriter {
     private <T> void writePalette(
             NBTOutputStream out, int capacity,
             Function<BlockVector3, T> objectResolver,
-            Function<T, Character> ordinalResolver,
+            Function<T, Integer> ordinalResolver,
             Function<T, String> paletteEntryResolver,
             Clipboard clipboard
     ) throws IOException {
@@ -225,18 +225,18 @@ public class FastSchematicWriterV3 implements ClipboardWriter {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         try (LZ4BlockOutputStream dataOut = new LZ4BlockOutputStream(bytes)) {
             int index = 0;
-            char[] palette = new char[capacity];
-            Arrays.fill(palette, Character.MAX_VALUE);
+            int[] palette = new int[capacity];
+            Arrays.fill(palette, Integer.MAX_VALUE);
             final Iterator<BlockVector3> iterator = clipboard.iterator(Order.YZX);
             // Start Palette tag
             out.writeNamedTagName("Palette", NBTConstants.TYPE_COMPOUND);
             while (iterator.hasNext()) {
                 BlockVector3 pos = iterator.next();
                 T obj = objectResolver.apply(pos);
-                char ordinal = ordinalResolver.apply(obj);
-                char value = palette[ordinal];
-                if (value == Character.MAX_VALUE) {
-                    palette[ordinal] = value = (char) index++;
+                int ordinal = ordinalResolver.apply(obj);
+                int value = palette[ordinal];
+                if (value == Integer.MAX_VALUE) {
+                    palette[ordinal] = value = (int) index++;
                     if (index >= palette.length) {
                         throw new IOException("insufficient palette capacity: " + palette.length + ", index: " + index);
                     }

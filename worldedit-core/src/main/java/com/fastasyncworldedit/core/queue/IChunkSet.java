@@ -34,7 +34,7 @@ public interface IChunkSet extends IBlocks, OutputExtent {
     @Override
     <T extends BlockStateHolder<T>> boolean setBlock(int x, int y, int z, T holder);
 
-    void setBlocks(int layer, char[] data);
+    void setBlocks(int layer, int[] data);
 
     boolean isEmpty();
 
@@ -55,9 +55,9 @@ public interface IChunkSet extends IBlocks, OutputExtent {
     @Override
     void setHeightMap(HeightMapType type, int[] heightMap);
 
-    void setLightLayer(int layer, char[] toSet);
+    void setLightLayer(int layer, int[] toSet);
 
-    void setSkyLightLayer(int layer, char[] toSet);
+    void setSkyLightLayer(int layer, int[] toSet);
 
     void setFullBright(int layer);
 
@@ -84,9 +84,9 @@ public interface IChunkSet extends IBlocks, OutputExtent {
         return getBiomes() != null;
     }
 
-    char[][] getLight();
+    int[][] getLight();
 
-    char[][] getSkyLight();
+    int[][] getSkyLight();
 
     default boolean hasLight() {
         return getLight() != null;

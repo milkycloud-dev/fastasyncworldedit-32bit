@@ -551,12 +551,12 @@ public class FastSchematicReaderV3 implements ClipboardReader {
         int i = 0;
         if (needsVarIntReading(length)) {
             for (var iter = new VarIntStreamIterator(stream, length); iter.hasNext(); i++) {
-                applier.apply(i, (char) iter.nextInt());
+                applier.apply(i, (int) iter.nextInt());
             }
             return;
         }
         while (i < length) {
-            applier.apply(i++, (char) stream.readUnsignedByte());
+            applier.apply(i++, (int) stream.readUnsignedByte());
         }
     }
 
@@ -577,7 +577,7 @@ public class FastSchematicReaderV3 implements ClipboardReader {
         }
         while (stream.readByte() != NBTConstants.TYPE_END) {
             String value = stream.readUTF();
-            char index = (char) stream.readInt();
+            int index = (int) stream.readInt();
             initializer.initialize(index, value);
         }
         return true;
@@ -803,7 +803,7 @@ public class FastSchematicReaderV3 implements ClipboardReader {
          * @param index the index of the entry, as used in the Data byte array.
          * @param value the value for this entry (either biome type as resource location or the block state as a string).
          */
-        void initialize(char index, String value);
+        void initialize(int index, String value);
 
     }
 
@@ -817,7 +817,7 @@ public class FastSchematicReaderV3 implements ClipboardReader {
          * @param index   The index of this data entry (due to var-int behaviour not necessarily the index in the data byte array).
          * @param ordinal The ordinal of this entry as defined in the palette mapping.
          */
-        void apply(int index, char ordinal);
+        void apply(int index, int ordinal);
 
     }
 

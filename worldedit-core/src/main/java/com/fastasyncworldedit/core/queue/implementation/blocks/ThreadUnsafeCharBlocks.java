@@ -38,16 +38,16 @@ public class ThreadUnsafeCharBlocks implements IChunkSet, IBlocks {
 
     private static final Logger LOGGER = LogManagerCompat.getLogger();
 
-    private final char defaultOrdinal;
+    private final int defaultOrdinal;
     private final int chunkX;
     private final int chunkZ;
-    private char[][] blocks;
+    private int[][] blocks;
     private int minSectionPosition;
     private int maxSectionPosition;
     private int sectionCount;
     private BiomeType[][] biomes;
-    private char[][] light;
-    private char[][] skyLight;
+    private int[][] light;
+    private int[][] skyLight;
     private BlockVector3ChunkMap<FaweCompoundTag> tiles;
     private HashSet<FaweCompoundTag> entities;
     private HashSet<UUID> entityRemoves;
@@ -62,18 +62,18 @@ public class ThreadUnsafeCharBlocks implements IChunkSet, IBlocks {
      * @since 2.6.2
      */
     ThreadUnsafeCharBlocks(
-            char[][] blocks,
+            int[][] blocks,
             int minSectionPosition,
             int maxSectionPosition,
             BiomeType[][] biomes,
             int sectionCount,
-            char[][] light,
-            char[][] skyLight,
+            int[][] light,
+            int[][] skyLight,
             BlockVector3ChunkMap<FaweCompoundTag> tiles,
             HashSet<FaweCompoundTag> entities,
             HashSet<UUID> entityRemoves,
             Map<HeightMapType, int[]> heightMaps,
-            char defaultOrdinal,
+            int defaultOrdinal,
             boolean fastMode,
             int bitMask,
             SideEffectSet sideEffectSet,
@@ -106,19 +106,19 @@ public class ThreadUnsafeCharBlocks implements IChunkSet, IBlocks {
     }
 
     @Override
-    public char[] load(int layer) {
+    public int[] load(int layer) {
         updateSectionIndexRange(layer);
         layer -= minSectionPosition;
-        char[] arr = blocks[layer];
+        int[] arr = blocks[layer];
         if (arr == null) {
-            arr = blocks[layer] = new char[FaweCache.INSTANCE.BLOCKS_PER_LAYER];
+            arr = blocks[layer] = new int[FaweCache.INSTANCE.BLOCKS_PER_LAYER];
         }
         return arr;
     }
 
     @Nullable
     @Override
-    public char[] loadIfPresent(int layer) {
+    public int[] loadIfPresent(int layer) {
         if (layer < minSectionPosition || layer > maxSectionPosition) {
             return null;
         }
@@ -151,20 +151,20 @@ public class ThreadUnsafeCharBlocks implements IChunkSet, IBlocks {
         updateSectionIndexRange(layer);
         layer -= minSectionPosition;
         if (light == null) {
-            light = new char[sectionCount][];
+            light = new int[sectionCount][];
         }
         if (light[layer] == null) {
-            light[layer] = new char[4096];
+            light[layer] = new int[4096];
         }
-        Arrays.fill(light[layer], (char) 0);
+        Arrays.fill(light[layer], (int) 0);
         if (sky) {
             if (skyLight == null) {
-                skyLight = new char[sectionCount][];
+                skyLight = new int[sectionCount][];
             }
             if (skyLight[layer] == null) {
-                skyLight[layer] = new char[4096];
+                skyLight[layer] = new int[4096];
             }
-            Arrays.fill(skyLight[layer], (char) 0);
+            Arrays.fill(skyLight[layer], (int) 0);
         }
     }
 
@@ -198,7 +198,7 @@ public class ThreadUnsafeCharBlocks implements IChunkSet, IBlocks {
         return chunkZ;
     }
 
-    public char get(int x, int y, int z) {
+    public int get(int x, int y, int z) {
         int layer = (y >> 4);
         if (!hasSection(layer)) {
             return defaultOrdinal;
@@ -242,7 +242,7 @@ public class ThreadUnsafeCharBlocks implements IChunkSet, IBlocks {
         return setBiome(position.x(), position.y(), position.z(), biome);
     }
 
-    public void set(int x, int y, int z, char value) {
+    public void set(int x, int y, int z, int value) {
         final int layer = (y >> 4) - minSectionPosition;
         final int index = (y & 15) << 8 | z << 4 | x;
         try {
@@ -263,7 +263,7 @@ public class ThreadUnsafeCharBlocks implements IChunkSet, IBlocks {
     }
 
     @Override
-    public void setBlocks(int layer, char[] data) {
+    public void setBlocks(int layer, int[] data) {
         updateSectionIndexRange(layer);
         layer -= minSectionPosition;
         this.blocks[layer] = data;
@@ -302,32 +302,32 @@ public class ThreadUnsafeCharBlocks implements IChunkSet, IBlocks {
     public void setBlockLight(int x, int y, int z, int value) {
         updateSectionIndexRange(y >> 4);
         if (light == null) {
-            light = new char[sectionCount][];
+            light = new int[sectionCount][];
         }
         final int layer = (y >> 4) - minSectionPosition;
         if (light[layer] == null) {
-            char[] c = new char[4096];
-            Arrays.fill(c, (char) 16);
+            int[] c = new int[4096];
+            Arrays.fill(c, (int) 16);
             light[layer] = c;
         }
         final int index = (y & 15) << 8 | (z & 15) << 4 | (x & 15);
-        light[layer][index] = (char) value;
+        light[layer][index] = (int) value;
     }
 
     @Override
     public void setSkyLight(int x, int y, int z, int value) {
         updateSectionIndexRange(y >> 4);
         if (skyLight == null) {
-            skyLight = new char[sectionCount][];
+            skyLight = new int[sectionCount][];
         }
         final int layer = (y >> 4) - minSectionPosition;
         if (skyLight[layer] == null) {
-            char[] c = new char[4096];
-            Arrays.fill(c, (char) 16);
+            int[] c = new int[4096];
+            Arrays.fill(c, (int) 16);
             skyLight[layer] = c;
         }
         final int index = (y & 15) << 8 | (z & 15) << 4 | (x & 15);
-        skyLight[layer][index] = (char) value;
+        skyLight[layer][index] = (int) value;
     }
 
     @Override
@@ -339,20 +339,20 @@ public class ThreadUnsafeCharBlocks implements IChunkSet, IBlocks {
     }
 
     @Override
-    public void setLightLayer(int layer, char[] toSet) {
+    public void setLightLayer(int layer, int[] toSet) {
         updateSectionIndexRange(layer);
         if (light == null) {
-            light = new char[sectionCount][];
+            light = new int[sectionCount][];
         }
         layer -= minSectionPosition;
         light[layer] = toSet;
     }
 
     @Override
-    public void setSkyLightLayer(int layer, char[] toSet) {
+    public void setSkyLightLayer(int layer, int[] toSet) {
         updateSectionIndexRange(layer);
         if (skyLight == null) {
-            skyLight = new char[sectionCount][];
+            skyLight = new int[sectionCount][];
         }
         layer -= minSectionPosition;
         skyLight[layer] = toSet;
@@ -363,19 +363,19 @@ public class ThreadUnsafeCharBlocks implements IChunkSet, IBlocks {
         updateSectionIndexRange(layer);
         layer -= minSectionPosition;
         if (light == null) {
-            light = new char[sectionCount][];
+            light = new int[sectionCount][];
         }
         if (light[layer] == null) {
-            light[layer] = new char[4096];
+            light[layer] = new int[4096];
         }
         if (skyLight == null) {
-            skyLight = new char[sectionCount][];
+            skyLight = new int[sectionCount][];
         }
         if (skyLight[layer] == null) {
-            skyLight[layer] = new char[4096];
+            skyLight[layer] = new int[4096];
         }
-        Arrays.fill(light[layer], (char) 15);
-        Arrays.fill(skyLight[layer], (char) 15);
+        Arrays.fill(light[layer], (int) 15);
+        Arrays.fill(skyLight[layer], (int) 15);
     }
 
     @Override
@@ -430,12 +430,12 @@ public class ThreadUnsafeCharBlocks implements IChunkSet, IBlocks {
     }
 
     @Override
-    public char[][] getLight() {
+    public int[][] getLight() {
         return light;
     }
 
     @Override
-    public char[][] getSkyLight() {
+    public int[][] getSkyLight() {
         return skyLight;
     }
 
@@ -446,10 +446,10 @@ public class ThreadUnsafeCharBlocks implements IChunkSet, IBlocks {
 
     @Override
     public IChunkSet reset() {
-        blocks = new char[sectionCount][];
+        blocks = new int[sectionCount][];
         biomes = new BiomeType[sectionCount][];
-        light = new char[sectionCount][];
-        skyLight = new char[sectionCount][];
+        light = new int[sectionCount][];
+        skyLight = new int[sectionCount][];
         tiles = null;
         entities = null;
         entityRemoves = null;
@@ -465,9 +465,9 @@ public class ThreadUnsafeCharBlocks implements IChunkSet, IBlocks {
 
     @Override
     public IChunkSet createCopy() {
-        char[][] blocksCopy = new char[sectionCount][];
+        int[][] blocksCopy = new int[sectionCount][];
         for (int i = 0; i < sectionCount; i++) {
-            blocksCopy[i] = new char[FaweCache.INSTANCE.BLOCKS_PER_LAYER];
+            blocksCopy[i] = new int[FaweCache.INSTANCE.BLOCKS_PER_LAYER];
             if (blocks[i] != null) {
                 System.arraycopy(blocks[i], 0, blocksCopy[i], 0, FaweCache.INSTANCE.BLOCKS_PER_LAYER);
             }
@@ -484,8 +484,8 @@ public class ThreadUnsafeCharBlocks implements IChunkSet, IBlocks {
                 }
             }
         }
-        char[][] lightCopy = CharSetBlocks.createLightCopy(light, sectionCount);
-        char[][] skyLightCopy = CharSetBlocks.createLightCopy(skyLight, sectionCount);
+        int[][] lightCopy = CharSetBlocks.createLightCopy(light, sectionCount);
+        int[][] skyLightCopy = CharSetBlocks.createLightCopy(skyLight, sectionCount);
         return new ThreadUnsafeCharBlocks(
                 blocksCopy,
                 minSectionPosition,
@@ -541,7 +541,7 @@ public class ThreadUnsafeCharBlocks implements IChunkSet, IBlocks {
     }
 
     private void resizeSectionsArrays(int layer, int diff, boolean appendNew) {
-        char[][] tmpBlocks = new char[sectionCount][];
+        int[][] tmpBlocks = new int[sectionCount][];
         int destPos = appendNew ? 0 : diff;
         System.arraycopy(blocks, 0, tmpBlocks, destPos, blocks.length);
         blocks = tmpBlocks;
@@ -551,12 +551,12 @@ public class ThreadUnsafeCharBlocks implements IChunkSet, IBlocks {
             biomes = tmpBiomes;
         }
         if (light != null) {
-            char[][] tmplight = new char[sectionCount][];
+            int[][] tmplight = new int[sectionCount][];
             System.arraycopy(light, 0, tmplight, destPos, light.length);
             light = tmplight;
         }
         if (skyLight != null) {
-            char[][] tmplight = new char[sectionCount][];
+            int[][] tmplight = new int[sectionCount][];
             System.arraycopy(skyLight, 0, tmplight, destPos, skyLight.length);
             skyLight = tmplight;
         }

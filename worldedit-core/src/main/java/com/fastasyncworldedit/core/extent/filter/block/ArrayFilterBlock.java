@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
 @Deprecated(forRemoval = true, since = "2.3.0")
 public class ArrayFilterBlock extends AbstractExtentFilterBlock {
 
-    private final char[] blocks;
+    private final int[] blocks;
     private final byte[] heights;
     private final int yOffset;
     private final int width;
@@ -28,7 +28,7 @@ public class ArrayFilterBlock extends AbstractExtentFilterBlock {
     private int index;
 
     public ArrayFilterBlock(
-            Extent extent, char[] blocks, byte[] heights, int width, int length,
+            Extent extent, int[] blocks, byte[] heights, int width, int length,
             int yOffset
     ) {
         super(extent);
@@ -53,7 +53,7 @@ public class ArrayFilterBlock extends AbstractExtentFilterBlock {
 
     @Override
     public void setOrdinal(int ordinal) {
-        blocks[index] = (char) ordinal;
+        blocks[index] = (int) ordinal;
     }
 
     @Override

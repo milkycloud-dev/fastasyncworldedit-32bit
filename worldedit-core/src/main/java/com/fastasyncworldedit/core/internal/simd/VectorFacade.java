@@ -2,7 +2,7 @@ package com.fastasyncworldedit.core.internal.simd;
 
 import com.fastasyncworldedit.core.queue.IBlocks;
 import com.sk89q.worldedit.world.block.BlockTypesCache;
-import jdk.incubator.vector.ShortVector;
+import jdk.incubator.vector.IntVector;
 import jdk.incubator.vector.VectorSpecies;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -11,34 +11,34 @@ public class VectorFacade {
     private final IBlocks blocks;
     private int layer;
     private int index;
-    private char[] data;
+    private int[] data;
 
     VectorFacade(final IBlocks blocks) {
         this.blocks = blocks;
     }
 
-    public ShortVector get(VectorSpecies<Short> species) {
+    public IntVector get(VectorSpecies<Integer> species) {
         if (this.data == null) {
             load();
         }
-        return ShortVector.fromCharArray(species, this.data, this.index);
+        return IntVector.fromArray(species, this.data, this.index);
     }
 
-    public ShortVector getOrZero(VectorSpecies<Short> species) {
+    public IntVector getOrZero(VectorSpecies<Integer> species) {
         if (this.data == null) {
-            return ShortVector.zero(species);
+            return IntVector.zero(species);
         }
-        return ShortVector.fromCharArray(species, this.data, this.index);
+        return IntVector.fromArray(species, this.data, this.index);
     }
 
-    public void setOrIgnore(ShortVector vector) {
+    public void setOrIgnore(IntVector vector) {
         if (this.data == null) {
-            if (vector.eq((short) BlockTypesCache.ReservedIDs.__RESERVED__).allTrue()) {
+            if (vector.eq(BlockTypesCache.ReservedIDs.__RESERVED__).allTrue()) {
                 return;
             }
             load();
         }
-        vector.intoCharArray(this.data, this.index);
+        vector.intoArray(this.data, this.index);
     }
 
     private void load() {
@@ -54,7 +54,7 @@ public class VectorFacade {
         this.index = index;
     }
 
-    public void setData(char[] data) {
+    public void setData(int[] data) {
         this.data = data;
     }
 

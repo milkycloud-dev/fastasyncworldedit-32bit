@@ -61,7 +61,7 @@ public abstract class PlacementStateProcessor extends AbstractDelegateExtent imp
     protected final Extent extent;
     protected final BlockTypeMask mask;
     protected final Region region;
-    protected final Map<SecondPass, Character> postCompleteSecondPasses;
+    protected final Map<SecondPass, Integer> postCompleteSecondPasses;
     protected final ThreadLocal<PlacementStateProcessor> threadProcessors;
     protected final AtomicBoolean finished;
     private final MutableVector3 clickPos = new MutableVector3();
@@ -102,7 +102,7 @@ public abstract class PlacementStateProcessor extends AbstractDelegateExtent imp
     protected PlacementStateProcessor(
             Extent extent,
             BlockTypeMask mask,
-            Map<SecondPass, Character> crossChunkSecondPasses,
+            Map<SecondPass, Integer> crossChunkSecondPasses,
             ThreadLocal<PlacementStateProcessor> threadProcessors,
             Region region,
             AtomicBoolean finished
@@ -234,7 +234,7 @@ public abstract class PlacementStateProcessor extends AbstractDelegateExtent imp
         Map<BlockVector3, FaweCompoundTag> setTiles = processChunkSet.tiles();
         for (int layer = processChunkGet.getMinSectionPosition(); layer <= processChunkGet.getMaxSectionPosition(); layer++) {
             int layerY = layer << 4;
-            char[] set = processChunkSet.loadIfPresent(layer);
+            int[] set = processChunkSet.loadIfPresent(layer);
             if (set == null) {
                 continue;
             }
@@ -249,7 +249,7 @@ public abstract class PlacementStateProcessor extends AbstractDelegateExtent imp
 
     private void checkAndPerformUpdate(
             Map<BlockVector3, FaweCompoundTag> setTiles,
-            char[] set,
+            int[] set,
             int index,
             int blockY,
             boolean firstPass
@@ -258,7 +258,7 @@ public abstract class PlacementStateProcessor extends AbstractDelegateExtent imp
             int blockZ = processChunkZ + z;
             for (int x = 0; x < 16; x++, index++) {
                 int blockX = processChunkX + x;
-                char ordinal = set[index];
+                int ordinal = set[index];
                 BlockState state = BlockTypesCache.states[ordinal];
                 if (firstPass) {
                     if (!IN_FIRST_PASS.test(state)) {
@@ -286,7 +286,7 @@ public abstract class PlacementStateProcessor extends AbstractDelegateExtent imp
                 } else {
                     placedBlock.setComponents(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
                 }
-                char newOrdinal = getBlockOrdinal(blockX, blockY, blockZ, state);
+                int newOrdinal = getBlockOrdinal(blockX, blockY, blockZ, state);
                 if (newOrdinal == ordinal) {
                     continue;
                 }
@@ -308,16 +308,16 @@ public abstract class PlacementStateProcessor extends AbstractDelegateExtent imp
     @Override
     public void flush() {
         finished.set(true);
-        for (Map.Entry<SecondPass, Character> entry : postCompleteSecondPasses.entrySet()) {
+        for (Map.Entry<SecondPass, Integer> entry : postCompleteSecondPasses.entrySet()) {
             BlockState state;
-            char ordinal = entry.getValue();
+            int ordinal = entry.getValue();
             SecondPass secondPass = entry.getKey();
             if (ordinal != 0) {
                 state = BlockTypesCache.states[ordinal];
             } else {
                 state = extent.getBlock(secondPass.x, secondPass.y, secondPass.z);
             }
-            char newOrdinal = getBlockOrdinal(secondPass.x, secondPass.y, secondPass.z, state);
+            int newOrdinal = getBlockOrdinal(secondPass.x, secondPass.y, secondPass.z, state);
             if (newOrdinal == state.getOrdinalChar() && ordinal == 0) {
                 continue;
             }
@@ -332,7 +332,7 @@ public abstract class PlacementStateProcessor extends AbstractDelegateExtent imp
     @Override
     public abstract PlacementStateProcessor fork();
 
-    protected abstract char getStateAtFor(
+    protected abstract int getStateAtFor(
             int x,
             int y,
             int z,
@@ -343,18 +343,18 @@ public abstract class PlacementStateProcessor extends AbstractDelegateExtent imp
     );
 
     public BlockState getBlockStateAt(int x, int y, int z) {
-        Character ord = postCompleteSecondPasses.get(new SecondPass(x, y, z, null));
+        Integer ord = postCompleteSecondPasses.get(new SecondPass(x, y, z, null));
         if (ord != null && ord != 0) {
             return BlockTypesCache.states[ord];
         }
         if (processChunkSet == null || (x & CHUNK_BLOCK_POS_MASK) != processChunkX || (z & CHUNK_BLOCK_POS_MASK) != processChunkZ) {
             return extent.getBlock(x, y, z);
         }
-        char[] set = processChunkSet.loadIfPresent(y >> 4);
+        int[] set = processChunkSet.loadIfPresent(y >> 4);
         if (set == null) {
             return processChunkGet.getBlock(x & 15, y, z & 15);
         }
-        char ordinal = set[(y & 15) << 8 | (z & 15) << 4 | (x & 15)];
+        int ordinal = set[(y & 15) << 8 | (z & 15) << 4 | (x & 15)];
         if (ordinal == BlockTypesCache.ReservedIDs.__RESERVED__) {
             return processChunkGet.getBlock(x & 15, y, z & 15);
         }
@@ -385,7 +385,7 @@ public abstract class PlacementStateProcessor extends AbstractDelegateExtent imp
 
     public LinCompoundTag getTileAt(int x, int y, int z) {
         SecondPass secondPass = new SecondPass(x, y, z, null);
-        Character ord = postCompleteSecondPasses.get(secondPass);
+        Integer ord = postCompleteSecondPasses.get(secondPass);
         if (ord != null && ord != 0) {
             // This should be rare enough...
             for (SecondPass pass : postCompleteSecondPasses.keySet()) {
@@ -402,19 +402,19 @@ public abstract class PlacementStateProcessor extends AbstractDelegateExtent imp
         if (tile != null) {
             return tile.linTag();
         }
-        char[] set = processChunkSet.loadIfPresent(y >> 4);
+        int[] set = processChunkSet.loadIfPresent(y >> 4);
         if (set == null) {
             return processChunkGet.getFullBlock(x & 15, y, z & 15).getNbt();
         }
-        char ordinal = set[(y & 15) << 8 | (z & 15) << 4 | (x & 15)];
+        int ordinal = set[(y & 15) << 8 | (z & 15) << 4 | (x & 15)];
         if (ordinal == BlockTypesCache.ReservedIDs.__RESERVED__) {
             return processChunkGet.getFullBlock(x & 15, y, z & 15).getNbt();
         }
         return BlockTypesCache.states[ordinal].getNbt();
     }
 
-    private char getBlockOrdinal(int blockX, int blockY, int blockZ, BlockState state) {
-        char override = getOverrideBlockOrdinal(blockX, blockY, blockZ, state);
+    private int getBlockOrdinal(int blockX, int blockY, int blockZ, BlockState state) {
+        int override = getOverrideBlockOrdinal(blockX, blockY, blockZ, state);
         if (override != BlockTypesCache.ReservedIDs.__RESERVED__) {
             return override;
         }
@@ -462,7 +462,7 @@ public abstract class PlacementStateProcessor extends AbstractDelegateExtent imp
         return getStateAtFor(blockX, blockY, blockZ, state, clickPos, clickedFaceDirection, clickedBlock);
     }
 
-    protected char getOverrideBlockOrdinal(int blockX, int blockY, int blockZ, BlockState state) {
+    protected int getOverrideBlockOrdinal(int blockX, int blockY, int blockZ, BlockState state) {
         if (BlockCategories.TALL_FLOWERS.contains(state)) {
             PropertyKey propertyKey = PropertyKey.HALF;
             BlockState plantState = extent.getBlock(blockX, blockY - 1, blockZ).getBlockType().equals(state.getBlockType())
@@ -483,10 +483,10 @@ public abstract class PlacementStateProcessor extends AbstractDelegateExtent imp
             return;
         }
         if (REQUIRES_SECOND_PASS.test(block.getBlock()) && ADJACENT_STAIR_MASK.test(extent, block)) {
-            postCompleteSecondPasses.put(new SecondPass(block), (char) 0);
+            postCompleteSecondPasses.put(new SecondPass(block), (int) 0);
         }
-        char ordinal = (char) block.getOrdinal();
-        char newOrdinal = getBlockOrdinal(block.x(), block.y(), block.z(), block.getBlock());
+        int ordinal = (int) block.getOrdinal();
+        int newOrdinal = getBlockOrdinal(block.x(), block.y(), block.z(), block.getBlock());
         if (ordinal != newOrdinal) {
             block.setBlock(BlockTypesCache.states[newOrdinal]);
         }
@@ -502,10 +502,10 @@ public abstract class PlacementStateProcessor extends AbstractDelegateExtent imp
             return false;
         }
         if (REQUIRES_SECOND_PASS.test(block) && ADJACENT_STAIR_MASK.test(extent, set)) {
-            postCompleteSecondPasses.put(new SecondPass(set), (char) 0);
+            postCompleteSecondPasses.put(new SecondPass(set), (int) 0);
             return false;
         }
-        char newOrdinal = getBlockOrdinal(set.x(), set.y(), set.z(), block.toBlockState());
+        int newOrdinal = getBlockOrdinal(set.x(), set.y(), set.z(), block.toBlockState());
         if (block.getOrdinalChar() != newOrdinal) {
             BlockState newState = BlockTypesCache.states[newOrdinal];
             orDefault.setBlock(set.x(), set.y(), set.z(), newState);
@@ -525,10 +525,10 @@ public abstract class PlacementStateProcessor extends AbstractDelegateExtent imp
             return block;
         }
         if (REQUIRES_SECOND_PASS.test(block) && ADJACENT_STAIR_MASK.test(extent, position)) {
-            postCompleteSecondPasses.put(new SecondPass(position), (char) 0);
+            postCompleteSecondPasses.put(new SecondPass(position), (int) 0);
             return block;
         }
-        char newOrdinal = getBlockOrdinal(position.x(), position.y(), position.z(), block.toBlockState());
+        int newOrdinal = getBlockOrdinal(position.x(), position.y(), position.z(), block.toBlockState());
         if (block.getOrdinalChar() != newOrdinal) {
             BlockState state = BlockTypesCache.states[newOrdinal];
             LinCompoundTag nbt = block.getNbt();

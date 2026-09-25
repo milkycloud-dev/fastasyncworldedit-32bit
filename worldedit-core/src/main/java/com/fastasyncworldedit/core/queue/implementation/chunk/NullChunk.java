@@ -84,13 +84,13 @@ public final class NullChunk implements IQueueChunk {
     }
 
     @Nonnull
-    public char[][] getLight() {
-        return new char[0][];
+    public int[][] getLight() {
+        return new int[0][];
     }
 
     @Nonnull
-    public char[][] getSkyLight() {
-        return new char[0][];
+    public int[][] getSkyLight() {
+        return new int[0][];
     }
 
     @Override
@@ -140,10 +140,10 @@ public final class NullChunk implements IQueueChunk {
     public void removeSectionLighting(int layer, boolean sky) {
     }
 
-    public void setSkyLightLayer(int layer, @Nullable char[] toSet) {
+    public void setSkyLightLayer(int layer, @Nullable int[] toSet) {
     }
 
-    public void setLightLayer(int layer, @Nullable char[] toSet) {
+    public void setLightLayer(int layer, @Nullable int[] toSet) {
     }
 
     @Nullable
@@ -155,7 +155,7 @@ public final class NullChunk implements IQueueChunk {
         return false;
     }
 
-    public void setBlocks(int layer, @Nonnull char[] data) {
+    public void setBlocks(int layer, @Nonnull int[] data) {
     }
 
     @Nullable
@@ -194,13 +194,13 @@ public final class NullChunk implements IQueueChunk {
 
 
     @Nullable
-    public char[] load(int layer) {
+    public int[] load(int layer) {
         return null;
     }
 
     @Nullable
     @Override
-    public char[] loadIfPresent(final int layer) {
+    public int[] loadIfPresent(final int layer) {
         return null;
     }
 
@@ -220,11 +220,11 @@ public final class NullChunk implements IQueueChunk {
     }
 
     @Override
-    public void setLightingToGet(char[][] lighting, int minSectionPosition, int maxSectionPosition) {
+    public void setLightingToGet(int[][] lighting, int minSectionPosition, int maxSectionPosition) {
     }
 
     @Override
-    public void setSkyLightingToGet(char[][] lighting, int minSectionPosition, int maxSectionPosition) {
+    public void setSkyLightingToGet(int[][] lighting, int minSectionPosition, int maxSectionPosition) {
     }
 
     @Override

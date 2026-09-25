@@ -75,7 +75,7 @@ public enum FaweCache implements Trimable {
 
     public final int BLOCKS_PER_LAYER = 4096;
 
-    public final char[] EMPTY_CHAR_4096 = new char[4096];
+    public final int[] EMPTY_CHAR_4096 = new int[4096];
 
     private final IdentityHashMap<Class<? extends IChunkSet>, Pool<? extends IChunkSet>> REGISTERED_POOLS = new IdentityHashMap<>();
 
@@ -255,12 +255,12 @@ public enum FaweCache implements Trimable {
         return result;
     });
 
-    public final CleanableThreadLocal<char[]> SECTION_BITS_TO_CHAR = new CleanableThreadLocal<>(() -> new char[4096]);
+    public final CleanableThreadLocal<int[]> SECTION_BITS_TO_CHAR = new CleanableThreadLocal<>(() -> new int[4096]);
 
     public final CleanableThreadLocal<int[]> PALETTE_TO_BLOCK = new CleanableThreadLocal<>(() -> new int[Character.MAX_VALUE + 1]);
 
-    public final CleanableThreadLocal<char[]> PALETTE_TO_BLOCK_CHAR = new CleanableThreadLocal<>(
-            () -> new char[Character.MAX_VALUE + 1], a -> {
+    public final CleanableThreadLocal<int[]> PALETTE_TO_BLOCK_CHAR = new CleanableThreadLocal<>(
+            () -> new int[Character.MAX_VALUE + 1], a -> {
         Arrays.fill(a, Character.MAX_VALUE);
     }
     );
@@ -295,10 +295,10 @@ public enum FaweCache implements Trimable {
     private final CleanableThreadLocal<Palette> PALETTE_CACHE = new CleanableThreadLocal<>(Palette::new);
 
     /**
-     * Convert raw char array to palette
+     * Convert raw int array to palette
      * @return palette
      */
-    public Palette toPalette(int layerOffset, char[] blocks) {
+    public Palette toPalette(int layerOffset, int[] blocks) {
         return toPalette(layerOffset, null, blocks);
     }
 
@@ -306,11 +306,11 @@ public enum FaweCache implements Trimable {
      * Convert raw int array to palette
      * @return palette
      */
-    public Palette toPalette(int layerOffset, int[] blocks) {
+    public Palette toPaletteFromInts(int layerOffset, int[] blocks) {
         return toPalette(layerOffset, blocks, null);
     }
 
-    private Palette toPalette(int layerOffset, int[] blocksInts, char[] blocksChars) {
+    private Palette toPalette(int layerOffset, int[] blocksInts, int[] blocksChars) {
         int[] blockToPalette = BLOCK_TO_PALETTE.get();
         int[] paletteToBlock = PALETTE_TO_BLOCK.get();
         long[] blockStates = BLOCK_STATES.get();
@@ -390,11 +390,11 @@ public enum FaweCache implements Trimable {
      *
      * @return palette
      */
-    public Palette toPaletteUnstretched(int layerOffset, char[] blocks) {
+    public Palette toPaletteUnstretched(int layerOffset, int[] blocks) {
         return toPaletteUnstretched(layerOffset, null, blocks);
     }
 
-    private Palette toPaletteUnstretched(int layerOffset, int[] blocksInts, char[] blocksChars) {
+    private Palette toPaletteUnstretched(int layerOffset, int[] blocksInts, int[] blocksChars) {
         int[] blockToPalette = BLOCK_TO_PALETTE.get();
         int[] paletteToBlock = PALETTE_TO_BLOCK.get();
         long[] blockStates = BLOCK_STATES.get();

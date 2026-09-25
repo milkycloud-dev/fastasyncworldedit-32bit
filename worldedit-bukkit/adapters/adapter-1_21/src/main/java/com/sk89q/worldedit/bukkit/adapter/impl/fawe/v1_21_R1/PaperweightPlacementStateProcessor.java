@@ -49,7 +49,7 @@ public class PaperweightPlacementStateProcessor extends PlacementStateProcessor 
     private PaperweightPlacementStateProcessor(
             Extent extent,
             BlockTypeMask mask,
-            Map<SecondPass, Character> crossChunkSecondPasses,
+            Map<SecondPass, Integer> crossChunkSecondPasses,
             ServerLevel serverLevel,
             ThreadLocal<PlacementStateProcessor> threadProcessors,
             Region region,
@@ -61,7 +61,7 @@ public class PaperweightPlacementStateProcessor extends PlacementStateProcessor 
     }
 
     @Override
-    protected char getStateAtFor(
+    protected int getStateAtFor(
             int x,
             int y,
             int z,

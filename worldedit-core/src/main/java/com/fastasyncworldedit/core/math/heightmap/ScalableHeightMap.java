@@ -56,7 +56,7 @@ public class ScalableHeightMap implements HeightMap {
 
     public static ScalableHeightMap fromClipboard(Clipboard clipboard, int minY, int maxY) {
         BlockVector3 dim = clipboard.getDimensions();
-        char[][] heightArray = new char[dim.x()][dim.z()];
+        int[][] heightArray = new int[dim.x()][dim.z()];
         int clipMinX = clipboard.getMinimumPoint().x();
         int clipMinZ = clipboard.getMinimumPoint().z();
         int clipMinY = clipboard.getMinimumPoint().y();
@@ -83,7 +83,7 @@ public class ScalableHeightMap implements HeightMap {
             }
             int x = xx - clipMinX;
             int z = zz - clipMinZ;
-            heightArray[x][z] = (char) Math.min(clipMaxY, ((maxY - minY + 1) * (highestY - clipMinY)) / clipHeight);
+            heightArray[x][z] = (int) Math.min(clipMaxY, ((maxY - minY + 1) * (highestY - clipMinY)) / clipHeight);
         }
         return new ArrayHeightMap(heightArray, maxY - minY + 1);
     }
@@ -92,7 +92,7 @@ public class ScalableHeightMap implements HeightMap {
         BufferedImage heightFile = MainUtil.readImage(stream);
         int width = heightFile.getWidth();
         int length = heightFile.getHeight();
-        char[][] array = new char[width][length];
+        int[][] array = new int[width][length];
         double third = 1 / 3.0;
         double alphaInverse = 1 / 255.0;
         for (int x = 0; x < width; x++) {
@@ -102,7 +102,7 @@ public class ScalableHeightMap implements HeightMap {
                 int green = pixel >> 8 & 0xFF;
                 int blue = pixel & 0xFF;
                 int alpha = pixel >> 24 & 0xFF;
-                array[x][z] = (char) (alpha * ((red + green + blue) * third) * alphaInverse);
+                array[x][z] = (int) (alpha * ((red + green + blue) * third) * alphaInverse);
             }
         }
         return new ArrayHeightMap(array, 256d);

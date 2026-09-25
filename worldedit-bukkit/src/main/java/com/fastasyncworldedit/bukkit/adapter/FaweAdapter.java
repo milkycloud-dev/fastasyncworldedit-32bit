@@ -79,18 +79,18 @@ public abstract class FaweAdapter<TAG, SERVER_LEVEL> extends CachedBukkitAdapter
         return true;
     }
 
-    public void mapFromGlobalPalette(char[] data) {
+    public void mapFromGlobalPalette(int[] data) {
         assert data.length == 4096;
         ensureInit();
         for (int i = 0; i < 4096; i++) {
-            data[i] = (char) this.ibdToOrdinal[data[i]];
+            data[i] = (int) this.ibdToOrdinal[data[i]];
         }
     }
 
-    public void mapWithPalette(char[] data, char[] paletteToOrdinal) {
+    public void mapWithPalette(int[] data, int[] paletteToOrdinal) {
         for (int i = 0; i < 4096; i++) {
-            char paletteVal = data[i];
-            char val = paletteToOrdinal[paletteVal];
+            int paletteVal = data[i];
+            int val = paletteToOrdinal[paletteVal];
             assert val != Character.MAX_VALUE; // paletteToOrdinal should prevent that
             data[i] = val;
         }

@@ -66,7 +66,7 @@ public class BlockState implements BlockStateHolder<BlockState>, Pattern {
     //FAWE start
     private final int internalId;
     private final int ordinal;
-    private final char ordinalChar;
+    private final int ordinalChar;
     private BlockMaterial material;
     private final BaseBlock emptyBaseBlock;
     private CompoundInput compoundInput = CompoundInput.NULL;
@@ -79,7 +79,7 @@ public class BlockState implements BlockStateHolder<BlockState>, Pattern {
         this.blockType = blockType;
         this.internalId = internalId;
         this.ordinal = ordinal;
-        this.ordinalChar = (char) ordinal;
+        this.ordinalChar = ordinal;
         this.emptyBaseBlock = new BlanketBaseBlock(this);
         this.lazyStringRepresentation = LazyReference.from(BlockStateHolder.super::getAsString);
     }
@@ -88,7 +88,7 @@ public class BlockState implements BlockStateHolder<BlockState>, Pattern {
         this.blockType = blockType;
         this.internalId = internalId;
         this.ordinal = ordinal;
-        this.ordinalChar = (char) ordinal;
+        this.ordinalChar = ordinal;
         this.emptyBaseBlock = new BlanketBaseBlock(this, tile);
         this.lazyStringRepresentation = LazyReference.from(BlockStateHolder.super::getAsString);
     }
@@ -478,7 +478,7 @@ public class BlockState implements BlockStateHolder<BlockState>, Pattern {
     }
 
     @Override
-    public final char getOrdinalChar() {
+    public final int getOrdinalChar() {
         return this.ordinalChar;
     }
 

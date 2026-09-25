@@ -26,8 +26,8 @@ import com.sk89q.worldedit.world.block.BlockType;
 import com.sk89q.worldedit.world.block.BlockTypes;
 import com.sk89q.worldedit.world.entity.EntityTypes;
 import com.sk89q.worldedit.world.storage.NBTConversions;
-import it.unimi.dsi.fastutil.chars.Char2IntArrayMap;
-import it.unimi.dsi.fastutil.chars.Char2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import org.apache.logging.log4j.Logger;
@@ -202,7 +202,7 @@ public class MinecraftStructure implements ClipboardReader, ClipboardWriter {
         )));
 
         // Block Palette
-        Char2IntMap ordinals = new Char2IntArrayMap();
+        Int2IntMap ordinals = new Int2IntArrayMap();
         LinListTag.Builder<@org.jetbrains.annotations.NotNull LinCompoundTag> palette = LinListTag.builder(LinTagType.compoundTag());
         Int2ObjectMap<BlockState> paletteIndexes = new Int2ObjectArrayMap<>();
         for (final BlockVector3 pos : clipboard) {

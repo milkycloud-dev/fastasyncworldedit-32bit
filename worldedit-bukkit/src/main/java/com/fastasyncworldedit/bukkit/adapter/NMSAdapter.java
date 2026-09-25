@@ -19,7 +19,7 @@ public class NMSAdapter implements FAWEPlatformAdapterImpl {
             int[] blockToPalette,
             int[] paletteToBlock,
             int[] blocksCopy,
-            char[] set,
+            int[] set,
             CachedBukkitAdapter adapter,
             final boolean globalKindaDoesNotExist
     ) {
@@ -44,15 +44,15 @@ public class NMSAdapter implements FAWEPlatformAdapterImpl {
             int[] blockToPalette,
             int[] paletteToBlock,
             int[] blocksCopy,
-            IntFunction<char[]> get,
-            char[] set,
+            IntFunction<int[]> get,
+            int[] set,
             CachedBukkitAdapter adapter,
             final boolean globalKindaDoesNotExist
     ) {
         int numPaletteEntries = 0;
-        char[] getArr = null;
+        int[] getArr = null;
         for (int i = 0; i < 4096; i++) {
-            char ordinal = set[i];
+            int ordinal = set[i];
             if (ordinal == BlockTypesCache.ReservedIDs.__RESERVED__) {
                 if (getArr == null) {
                     getArr = get.apply(layer);
@@ -60,7 +60,7 @@ public class NMSAdapter implements FAWEPlatformAdapterImpl {
                 ordinal = getArr[i];
                 // write to set array as this should be a copied array, and will be important when the changes are written
                 // to the GET chunk cached by FAWE. Future dords, actually read this comment please.
-                set[i] = (char) Math.max(ordinal, BlockTypesCache.ReservedIDs.AIR);
+                set[i] = (int) Math.max(ordinal, BlockTypesCache.ReservedIDs.AIR);
             }
             int palette = blockToPalette[ordinal];
             if (palette == Integer.MAX_VALUE) {
@@ -78,7 +78,7 @@ public class NMSAdapter implements FAWEPlatformAdapterImpl {
             int[] blockToPalette,
             int[] paletteToBlock,
             int[] blocksCopy,
-            char[] set,
+            int[] set,
             CachedBukkitAdapter adapter,
             int numPaletteEntries,
             boolean globalKindaDoesNotExist

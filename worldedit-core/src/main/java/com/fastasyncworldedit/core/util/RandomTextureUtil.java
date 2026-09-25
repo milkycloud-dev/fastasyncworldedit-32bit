@@ -72,7 +72,7 @@ public class RandomTextureUtil extends CachedTextureUtil {
     }
 
     @Override
-    public boolean getIsBlockCloserThanBiome(char[] blockAndBiomeIdOutput, int color, int biomePriority) {
+    public boolean getIsBlockCloserThanBiome(int[] blockAndBiomeIdOutput, int color, int biomePriority) {
         BlockType block = getNearestBlock(color);
         int[] mix = biomeMixes.getOrDefault(color, null);
         if (mix == null) {
@@ -89,7 +89,7 @@ public class RandomTextureUtil extends CachedTextureUtil {
         int biomeAvColor = mix[3];
         int blockColor = getColor(block);
         blockAndBiomeIdOutput[0] = block.getDefaultState().getOrdinalChar();
-        blockAndBiomeIdOutput[1] = (char) biomeId;
+        blockAndBiomeIdOutput[1] = (int) biomeId;
         return colorDistance(biomeAvColor, color) - biomePriority > colorDistance(blockColor, color);
     }
 

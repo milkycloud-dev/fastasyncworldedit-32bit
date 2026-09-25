@@ -83,11 +83,11 @@ public final class NullChunkGet implements IChunkGet {
     }
 
     @Override
-    public void setLightingToGet(char[][] lighting, int startSectionIndex, int endSectionIndex) {
+    public void setLightingToGet(int[][] lighting, int startSectionIndex, int endSectionIndex) {
     }
 
     @Override
-    public void setSkyLightingToGet(char[][] lighting, int minSectionPosition, int maxSectionPosition) {
+    public void setSkyLightingToGet(int[][] lighting, int minSectionPosition, int maxSectionPosition) {
     }
 
     @Override
@@ -143,13 +143,13 @@ public final class NullChunkGet implements IChunkGet {
     }
 
     @Nonnull
-    public char[] load(int layer) {
+    public int[] load(int layer) {
         return FaweCache.INSTANCE.EMPTY_CHAR_4096;
     }
 
     @Nullable
     @Override
-    public char[] loadIfPresent(final int layer) {
+    public int[] loadIfPresent(final int layer) {
         return null;
     }
 

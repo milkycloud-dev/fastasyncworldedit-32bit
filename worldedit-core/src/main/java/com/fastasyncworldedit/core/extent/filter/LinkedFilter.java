@@ -78,7 +78,7 @@ public sealed class LinkedFilter<L extends Filter, R extends Filter> implements 
         }
 
         @Override
-        public void applyVector(final VectorFacade get, final VectorFacade set, final VectorMask<Short> mask) {
+        public void applyVector(final VectorFacade get, final VectorFacade set, final VectorMask<Integer> mask) {
             getLeft().applyVector(get, set, mask);
             getRight().applyVector(get, set, mask);
         }

@@ -36,15 +36,15 @@ public class PaperweightPostProcessor implements IBatchProcessor {
         PaperweightGetBlocks_Copy getBlocks = (PaperweightGetBlocks_Copy) iChunkGet;
         layer:
         for (int layer = iChunkSet.getMinSectionPosition(); layer <= iChunkSet.getMaxSectionPosition(); layer++) {
-            char[] set = iChunkSet.loadIfPresent(layer);
+            int[] set = iChunkSet.loadIfPresent(layer);
             if (set == null) {
                 // No edit means no need to process
                 continue;
             }
-            char[] get = null;
+            int[] get = null;
             for (int i = 0; i < 4096; i++) {
-                char ordinal = set[i];
-                char replacedOrdinal = BlockTypesCache.ReservedIDs.__RESERVED__;
+                int ordinal = set[i];
+                int replacedOrdinal = BlockTypesCache.ReservedIDs.__RESERVED__;
                 boolean fromGet = false; // Used for liquids
                 if (ordinal == BlockTypesCache.ReservedIDs.__RESERVED__) {
                     if (get == null) {
@@ -115,12 +115,12 @@ public class PaperweightPostProcessor implements IBatchProcessor {
         return ProcessorScope.READING_BLOCKS;
     }
 
-    private boolean wasAdjacentToWater(char[] get, char[] set, int i, int x, int y, int z) {
+    private boolean wasAdjacentToWater(int[] get, int[] set, int i, int x, int y, int z) {
         if (set == null || get == null) {
             return false;
         }
-        char ordinal;
-        char reserved = BlockTypesCache.ReservedIDs.__RESERVED__;
+        int ordinal;
+        int reserved = BlockTypesCache.ReservedIDs.__RESERVED__;
         if (x > 0 && set[i - 1] != reserved) {
             if (BlockTypesCache.ticking[(ordinal = get[i - 1])] && isFluid(ordinal)) {
                 return true;
@@ -153,7 +153,7 @@ public class PaperweightPostProcessor implements IBatchProcessor {
     }
 
     @SuppressWarnings("deprecation")
-    private boolean isFluid(char ordinal) {
+    private boolean isFluid(int ordinal) {
         return BlockState.getFromOrdinal(ordinal).getMaterial().isLiquid();
     }
 

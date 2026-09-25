@@ -53,8 +53,8 @@ public class CharSetBlocks extends CharBlocks implements IChunkSet {
     }
 
     public BiomeType[][] biomes;
-    public char[][] light;
-    public char[][] skyLight;
+    public int[][] light;
+    public int[][] skyLight;
     public BlockVector3ChunkMap<FaweCompoundTag> tiles;
     public HashSet<FaweCompoundTag> entities;
     public HashSet<UUID> entityRemoves;
@@ -138,7 +138,7 @@ public class CharSetBlocks extends CharBlocks implements IChunkSet {
     }
 
     @Override
-    public void setBlocks(int layer, char[] data) {
+    public void setBlocks(int layer, int[] data) {
         updateSectionIndexRange(layer);
         layer -= minSectionPosition;
         this.blocks[layer] = data;
@@ -164,32 +164,32 @@ public class CharSetBlocks extends CharBlocks implements IChunkSet {
     public void setBlockLight(int x, int y, int z, int value) {
         updateSectionIndexRange(y >> 4);
         if (light == null) {
-            light = new char[sectionCount][];
+            light = new int[sectionCount][];
         }
         final int layer = (y >> 4) - minSectionPosition;
         if (light[layer] == null) {
-            char[] c = new char[4096];
-            Arrays.fill(c, (char) 16);
+            int[] c = new int[4096];
+            Arrays.fill(c, (int) 16);
             light[layer] = c;
         }
         final int index = (y & 15) << 8 | (z & 15) << 4 | (x & 15);
-        light[layer][index] = (char) value;
+        light[layer][index] = (int) value;
     }
 
     @Override
     public void setSkyLight(int x, int y, int z, int value) {
         updateSectionIndexRange(y >> 4);
         if (skyLight == null) {
-            skyLight = new char[sectionCount][];
+            skyLight = new int[sectionCount][];
         }
         final int layer = (y >> 4) - minSectionPosition;
         if (skyLight[layer] == null) {
-            char[] c = new char[4096];
-            Arrays.fill(c, (char) 16);
+            int[] c = new int[4096];
+            Arrays.fill(c, (int) 16);
             skyLight[layer] = c;
         }
         final int index = (y & 15) << 8 | (z & 15) << 4 | (x & 15);
-        skyLight[layer][index] = (char) value;
+        skyLight[layer][index] = (int) value;
     }
 
     @Override
@@ -201,32 +201,32 @@ public class CharSetBlocks extends CharBlocks implements IChunkSet {
     }
 
     @Override
-    public void setLightLayer(int layer, char[] toSet) {
+    public void setLightLayer(int layer, int[] toSet) {
         updateSectionIndexRange(layer);
         if (light == null) {
-            light = new char[sectionCount][];
+            light = new int[sectionCount][];
         }
         layer -= minSectionPosition;
         light[layer] = toSet;
     }
 
     @Override
-    public void setSkyLightLayer(int layer, char[] toSet) {
+    public void setSkyLightLayer(int layer, int[] toSet) {
         updateSectionIndexRange(layer);
         if (skyLight == null) {
-            skyLight = new char[sectionCount][];
+            skyLight = new int[sectionCount][];
         }
         layer -= minSectionPosition;
         skyLight[layer] = toSet;
     }
 
     @Override
-    public char[][] getLight() {
+    public int[][] getLight() {
         return light;
     }
 
     @Override
-    public char[][] getSkyLight() {
+    public int[][] getSkyLight() {
         return skyLight;
     }
 
@@ -235,20 +235,20 @@ public class CharSetBlocks extends CharBlocks implements IChunkSet {
         updateSectionIndexRange(layer);
         layer -= minSectionPosition;
         if (light == null) {
-            light = new char[sectionCount][];
+            light = new int[sectionCount][];
         }
         if (light[layer] == null) {
-            light[layer] = new char[4096];
+            light[layer] = new int[4096];
         }
-        Arrays.fill(light[layer], (char) 0);
+        Arrays.fill(light[layer], (int) 0);
         if (sky) {
             if (skyLight == null) {
-                skyLight = new char[sectionCount][];
+                skyLight = new int[sectionCount][];
             }
             if (skyLight[layer] == null) {
-                skyLight[layer] = new char[4096];
+                skyLight[layer] = new int[4096];
             }
-            Arrays.fill(skyLight[layer], (char) 0);
+            Arrays.fill(skyLight[layer], (int) 0);
         }
     }
 
@@ -257,19 +257,19 @@ public class CharSetBlocks extends CharBlocks implements IChunkSet {
         updateSectionIndexRange(layer);
         layer -= minSectionPosition;
         if (light == null) {
-            light = new char[sectionCount][];
+            light = new int[sectionCount][];
         }
         if (light[layer] == null) {
-            light[layer] = new char[4096];
+            light[layer] = new int[4096];
         }
         if (skyLight == null) {
-            skyLight = new char[sectionCount][];
+            skyLight = new int[sectionCount][];
         }
         if (skyLight[layer] == null) {
-            skyLight[layer] = new char[4096];
+            skyLight[layer] = new int[4096];
         }
-        Arrays.fill(light[layer], (char) 15);
-        Arrays.fill(skyLight[layer], (char) 15);
+        Arrays.fill(light[layer], (int) 15);
+        Arrays.fill(skyLight[layer], (int) 15);
     }
 
     @Override
@@ -356,10 +356,10 @@ public class CharSetBlocks extends CharBlocks implements IChunkSet {
 
     @Override
     public ThreadUnsafeCharBlocks createCopy() {
-        char[][] blocksCopy = new char[sectionCount][];
+        int[][] blocksCopy = new int[sectionCount][];
         for (int i = 0; i < sectionCount; i++) {
             if (blocks[i] != null) {
-                blocksCopy[i] = new char[FaweCache.INSTANCE.BLOCKS_PER_LAYER];
+                blocksCopy[i] = new int[FaweCache.INSTANCE.BLOCKS_PER_LAYER];
                 System.arraycopy(blocks[i], 0, blocksCopy[i], 0, FaweCache.INSTANCE.BLOCKS_PER_LAYER);
             }
         }
@@ -375,8 +375,8 @@ public class CharSetBlocks extends CharBlocks implements IChunkSet {
                 }
             }
         }
-        char[][] lightCopy = createLightCopy(light, sectionCount);
-        char[][] skyLightCopy = createLightCopy(skyLight, sectionCount);
+        int[][] lightCopy = createLightCopy(light, sectionCount);
+        int[][] skyLightCopy = createLightCopy(skyLight, sectionCount);
         return new ThreadUnsafeCharBlocks(
                 blocksCopy,
                 minSectionPosition,
@@ -408,14 +408,14 @@ public class CharSetBlocks extends CharBlocks implements IChunkSet {
         return sideEffectSet;
     }
 
-    static char[][] createLightCopy(char[][] lightArr, int sectionCount) {
+    static int[][] createLightCopy(int[][] lightArr, int sectionCount) {
         if (lightArr == null) {
             return null;
         } else {
-            char[][] lightCopy = new char[sectionCount][];
+            int[][] lightCopy = new int[sectionCount][];
             for (int i = 0; i < sectionCount; i++) {
                 if (lightArr[i] != null) {
-                    lightCopy[i] = new char[lightArr[i].length];
+                    lightCopy[i] = new int[lightArr[i].length];
                     System.arraycopy(lightArr[i], 0, lightCopy[i], 0, lightArr[i].length);
                 }
             }
@@ -424,13 +424,13 @@ public class CharSetBlocks extends CharBlocks implements IChunkSet {
     }
 
     @Override
-    public char[] load(final int layer) {
+    public int[] load(final int layer) {
         updateSectionIndexRange(layer);
         return super.load(layer);
     }
 
     @Override
-    protected char defaultOrdinal() {
+    protected int defaultOrdinal() {
         return BlockTypesCache.ReservedIDs.__RESERVED__;
     }
 
@@ -453,7 +453,7 @@ public class CharSetBlocks extends CharBlocks implements IChunkSet {
     }
 
     private void resizeSectionsArrays(int diff, boolean appendNew) {
-        char[][] tmpBlocks = new char[sectionCount][];
+        int[][] tmpBlocks = new int[sectionCount][];
         Object[] tmpSectionLocks = new Object[sectionCount];
         int destPos = appendNew ? 0 : diff;
         System.arraycopy(blocks, 0, tmpBlocks, destPos, blocks.length);
@@ -471,12 +471,12 @@ public class CharSetBlocks extends CharBlocks implements IChunkSet {
             biomes = tmpBiomes;
         }
         if (light != null) {
-            char[][] tmplight = new char[sectionCount][];
+            int[][] tmplight = new int[sectionCount][];
             System.arraycopy(light, 0, tmplight, destPos, light.length);
             light = tmplight;
         }
         if (skyLight != null) {
-            char[][] tmplight = new char[sectionCount][];
+            int[][] tmplight = new int[sectionCount][];
             System.arraycopy(skyLight, 0, tmplight, destPos, skyLight.length);
             skyLight = tmplight;
         }

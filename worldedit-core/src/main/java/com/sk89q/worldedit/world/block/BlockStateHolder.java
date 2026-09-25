@@ -67,7 +67,7 @@ public interface BlockStateHolder<B extends BlockStateHolder<B>> extends TileEnt
     int getOrdinal();
 
     @Deprecated
-    char getOrdinalChar();
+    int getOrdinalChar();
 
     BlockMaterial getMaterial();
 

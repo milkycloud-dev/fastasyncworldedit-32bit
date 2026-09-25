@@ -121,8 +121,46 @@ public class BlockTypesCache {
                 }
                 int defaultPropId = parseProperties(propertyString, propertiesMap) >> BIT_OFFSET;
 
-                this.defaultState = states.get(this.stateOrdinals[defaultPropId]);
+                // 32-bit fork: сколько перестановок реально легло в таблицу.
+                int expected = 1;
+                for (AbstractProperty<?> property : propertiesList) {
+                    expected *= property.getValues().size();
+                }
+                $LAST_EXPECTED = expected;
+                int actual = 0;
+                int firstOrdinal = -1;
+                for (int ord : this.stateOrdinals) {
+                    if (ord != -1) {
+                        actual++;
+                        if (firstOrdinal == -1) {
+                            firstOrdinal = ord;
+                        }
+                    }
+                }
+                if (actual != expected) {
+                    notePackingLoss(id, expected, actual);
+                }
+
+                int defaultOrdinal = -1;
+                if (defaultPropId >= 0 && defaultPropId < this.stateOrdinals.length) {
+                    defaultOrdinal = this.stateOrdinals[defaultPropId];
+                }
+                if (defaultOrdinal < 0 || defaultOrdinal >= states.size()) {
+                    defaultOrdinal = firstOrdinal;
+                }
+                if (defaultOrdinal < 0 || defaultOrdinal >= states.size()) {
+                    CompoundTag onlyNBT = blockMaterial.getDefaultTile();
+                    BlockState only = onlyNBT != null
+                            ? new BlockState(type, internalId, states.size(), onlyNBT)
+                            : new BlockState(type, internalId, states.size());
+                    this.stateOrdinals[0] = states.size();
+                    defaultOrdinal = states.size();
+                    states.add(only);
+                    notePackingLoss(id, expected, 0);
+                }
+                this.defaultState = states.get(defaultOrdinal);
             } else {
+                $LAST_EXPECTED = 1;
                 CompoundTag defaultNBT = blockMaterial.getDefaultTile();
                 this.defaultState = defaultNBT != null ? new BlockState(
                         type,
@@ -154,7 +192,7 @@ public class BlockTypesCache {
         if (props.isEmpty()) {
             return null;
         }
-        int[] result = new int[maxStateId];
+        int[] result = new int[Math.max(1, maxStateId)];
         Arrays.fill(result, -1);
         int[] state = new int[props.size()];
         int[] sizes = new int[props.size()];
@@ -170,7 +208,14 @@ public class BlockTypesCache {
                 stateId = props.get(i).modifyIndex(stateId, state[i]);
             }
             // Map it to the ordinal
-            result[stateId >> BIT_OFFSET] = ordinal++;
+            // 32-bit fork: у модовых блоков две разные перестановки свойств умеют
+            // упаковаться в один индекс. Раньше счётчик рос и на такой коллизии,
+            // хотя состояние в список не добавлялось, и номера уходили за конец
+            // списка. Теперь номер выдаётся только вместе с реальным состоянием.
+            int slot = stateId >> BIT_OFFSET;
+            if (slot >= 0 && slot < result.length && result[slot] == -1) {
+                result[slot] = ordinal++;
+            }
             // Increment the state
             while (++state[index] == sizes[index]) {
                 state[index] = 0;
@@ -205,6 +250,31 @@ public class BlockTypesCache {
     private static final Map<String, List<Property<?>>> allProperties = new HashMap<>();
 
     protected static final Set<String> $NAMESPACES = new LinkedHashSet<>();
+
+    // 32-bit fork: блоки, у которых упаковка состояний не сошлась, и блоки,
+    // которые ядро вообще не дало зарегистрировать. Списки обрезаны, счётчики
+    // отдельно: иначе одна строка лога вырастет на сотни килобайт.
+    static final List<String> $PACKING_LOSSES = new ArrayList<>();
+    static final List<String> $SKIPPED = new ArrayList<>();
+    static int $PACKING_LOSS_COUNT;
+    static int $SKIPPED_COUNT;
+    static int $TAKEN;
+    static int $PLATFORM_STATES;
+    static int $LAST_EXPECTED = 1;
+
+    static void notePackingLoss(String id, int expected, int actual) {
+        $PACKING_LOSS_COUNT++;
+        if ($PACKING_LOSSES.size() < 32) {
+            $PACKING_LOSSES.add(id + " (" + actual + " из " + expected + ")");
+        }
+    }
+
+    static void noteSkipped(String id, Throwable why) {
+        $SKIPPED_COUNT++;
+        if ($SKIPPED.size() < 32) {
+            $SKIPPED.add(id + " (" + why + ")");
+        }
+    }
 
     static {
         try {
@@ -260,8 +330,26 @@ public class BlockTypesCache {
                     // Skip already registered ids
                     for (; values[internalId] != null; internalId++) {
                     }
-                    BlockType type = register(defaultState, internalId, stateList, tickList);
-                    values[internalId] = type;
+                    // 32-bit fork: раньше любой модовый блок, на котором спотыкался
+                    // конструктор, ронял весь статический инициализатор, а с ним
+                    // и блочный реестр до конца жизни процесса. Теперь такой блок
+                    // пропускается поимённо, уже добавленные состояния откатываются.
+                    int stateMark = stateList.size();
+                    int tickMark = tickList.size();
+                    try {
+                        BlockType type = register(defaultState, internalId, stateList, tickList);
+                        values[internalId] = type;
+                        $TAKEN++;
+                        $PLATFORM_STATES += $LAST_EXPECTED;
+                    } catch (Throwable badBlock) {
+                        while (stateList.size() > stateMark) {
+                            stateList.remove(stateList.size() - 1);
+                        }
+                        while (tickList.size() > tickMark) {
+                            tickList.remove(tickList.size() - 1);
+                        }
+                        noteSkipped(entry.getKey(), badBlock);
+                    }
                 }
             }
             for (int i = 0; i < values.length; i++) {
@@ -270,8 +358,41 @@ public class BlockTypesCache {
                 }
             }
 
+            // 32-bit fork: адаптер строит таблицу перевода длиной states.length, а
+            // индексирует её идентификатором состояния блока из ядра. Их больше,
+            // чем состояний у нас: часть блоков ядро считает по-своему, часть мы
+            // не смогли разобрать. Дополняем список ссылками на воздух: лишние
+            // ячейки ни на что не указывают, но длина получается с запасом.
+            int usedStates = stateList.size();
+            if (!stateList.isEmpty()) {
+                BlockState filler = stateList.get(0);
+                int target = Math.max($PLATFORM_STATES + 65536, 1 << 19);
+                while (stateList.size() < target) {
+                    stateList.add(filler);
+                    tickList.add(Boolean.FALSE);
+                }
+            }
+
             states = stateList.toArray(new BlockState[stateList.size()]);
             ticking = Booleans.toArray(tickList);
+
+            java.util.logging.Logger.getLogger("FastAsyncWorldEdit").info(
+                    "Блоков у ядра: " + blockMap.size() + ", взято: " + $TAKEN
+                            + ", не разобрано: " + $SKIPPED_COUNT
+                            + ". Состояний " + usedStates
+                            + ", длина таблицы " + states.length
+                            + " (потолка в 16 бит больше нет)");
+            if (!$SKIPPED.isEmpty()) {
+                java.util.logging.Logger.getLogger("FastAsyncWorldEdit").warning(
+                        "Не удалось зарегистрировать блоков: " + $SKIPPED_COUNT
+                                + ", WorldEdit их не увидит: " + String.join(", ", $SKIPPED));
+            }
+            if (!$PACKING_LOSSES.isEmpty()) {
+                java.util.logging.Logger.getLogger("FastAsyncWorldEdit").warning(
+                        "Упаковка состояний не сошлась у " + $PACKING_LOSS_COUNT
+                                + " блоков, часть их состояний склеена: "
+                                + String.join(", ", $PACKING_LOSSES));
+            }
 
         } catch (Throwable e) {
             e.printStackTrace();

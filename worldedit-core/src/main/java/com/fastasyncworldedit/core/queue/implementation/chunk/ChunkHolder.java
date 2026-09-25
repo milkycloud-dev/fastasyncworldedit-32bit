@@ -124,28 +124,28 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T> {
     }
 
     @Override
-    public char[][] getLight() {
+    public int[][] getLight() {
         return delegate.set(this).getLight();
     }
 
     @Override
-    public char[][] getSkyLight() {
+    public int[][] getSkyLight() {
         return delegate.set(this).getSkyLight();
     }
 
     @Override
-    public void setBlocks(int layer, char[] data) {
+    public void setBlocks(int layer, int[] data) {
         delegate.set(this).setBlocks(layer, data);
     }
 
     @Override
-    public char[] load(int layer) {
+    public int[] load(int layer) {
         return getOrCreateGet().load(layer);
     }
 
     @Nullable
     @Override
-    public char[] loadIfPresent(final int layer) {
+    public int[] loadIfPresent(final int layer) {
         if (chunkExisting == null) {
             return null;
         }
@@ -202,12 +202,12 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T> {
     }
 
     @Override
-    public void setLightingToGet(char[][] lighting, int minSectionPosition, int maxSectionPosition) {
+    public void setLightingToGet(int[][] lighting, int minSectionPosition, int maxSectionPosition) {
         delegate.setLightingToGet(this, lighting);
     }
 
     @Override
-    public void setSkyLightingToGet(char[][] lighting, int minSectionPosition, int maxSectionPosition) {
+    public void setSkyLightingToGet(int[][] lighting, int minSectionPosition, int maxSectionPosition) {
         delegate.setSkyLightingToGet(this, lighting);
     }
 
@@ -289,12 +289,12 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T> {
         }
 
         @Override
-        public void setLightLayer(ChunkHolder chunk, int layer, char[] toSet) {
+        public void setLightLayer(ChunkHolder chunk, int layer, int[] toSet) {
             chunk.chunkSet.setLightLayer(layer, toSet);
         }
 
         @Override
-        public void setSkyLightLayer(ChunkHolder chunk, int layer, char[] toSet) {
+        public void setSkyLightLayer(ChunkHolder chunk, int layer, int[] toSet) {
             chunk.chunkSet.setSkyLightLayer(layer, toSet);
         }
 
@@ -380,7 +380,7 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T> {
         }
 
         @Override
-        public void setLightingToGet(ChunkHolder chunk, char[][] lighting) {
+        public void setLightingToGet(ChunkHolder chunk, int[][] lighting) {
             chunk.chunkExisting.setLightingToGet(
                     lighting,
                     chunk.chunkSet.getMinSectionPosition(),
@@ -389,7 +389,7 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T> {
         }
 
         @Override
-        public void setSkyLightingToGet(ChunkHolder chunk, char[][] lighting) {
+        public void setSkyLightingToGet(ChunkHolder chunk, int[][] lighting) {
             chunk.chunkExisting.setSkyLightingToGet(
                     lighting,
                     chunk.chunkSet.getMinSectionPosition(),
@@ -465,14 +465,14 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T> {
         }
 
         @Override
-        public void setLightLayer(ChunkHolder chunk, int layer, char[] toSet) {
+        public void setLightLayer(ChunkHolder chunk, int layer, int[] toSet) {
             chunk.getOrCreateSet();
             chunk.delegate = BOTH;
             chunk.setLightLayer(layer, toSet);
         }
 
         @Override
-        public void setSkyLightLayer(ChunkHolder chunk, int layer, char[] toSet) {
+        public void setSkyLightLayer(ChunkHolder chunk, int layer, int[] toSet) {
             chunk.getOrCreateSet();
             chunk.delegate = BOTH;
             chunk.setSkyLightLayer(layer, toSet);
@@ -534,7 +534,7 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T> {
         }
 
         @Override
-        public void setLightingToGet(ChunkHolder chunk, char[][] lighting) {
+        public void setLightingToGet(ChunkHolder chunk, int[][] lighting) {
             chunk.chunkExisting.setLightingToGet(
                     lighting,
                     chunk.chunkSet.getMinSectionPosition(),
@@ -543,7 +543,7 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T> {
         }
 
         @Override
-        public void setSkyLightingToGet(ChunkHolder chunk, char[][] lighting) {
+        public void setSkyLightingToGet(ChunkHolder chunk, int[][] lighting) {
             chunk.chunkExisting.setSkyLightingToGet(
                     lighting,
                     chunk.chunkSet.getMinSectionPosition(),
@@ -612,12 +612,12 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T> {
         }
 
         @Override
-        public void setLightLayer(ChunkHolder chunk, int layer, char[] toSet) {
+        public void setLightLayer(ChunkHolder chunk, int layer, int[] toSet) {
             chunk.chunkSet.setLightLayer(layer, toSet);
         }
 
         @Override
-        public void setSkyLightLayer(ChunkHolder chunk, int layer, char[] toSet) {
+        public void setSkyLightLayer(ChunkHolder chunk, int layer, int[] toSet) {
             chunk.chunkSet.setSkyLightLayer(layer, toSet);
         }
 
@@ -717,14 +717,14 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T> {
         }
 
         @Override
-        public void setLightingToGet(ChunkHolder chunk, char[][] lighting) {
+        public void setLightingToGet(ChunkHolder chunk, int[][] lighting) {
             chunk.getOrCreateGet();
             chunk.delegate = BOTH;
             chunk.setLightingToGet(lighting, chunk.chunkSet.getMinSectionPosition(), chunk.chunkSet.getMaxSectionPosition());
         }
 
         @Override
-        public void setSkyLightingToGet(ChunkHolder chunk, char[][] lighting) {
+        public void setSkyLightingToGet(ChunkHolder chunk, int[][] lighting) {
             chunk.getOrCreateGet();
             chunk.delegate = BOTH;
             chunk.setSkyLightingToGet(lighting, chunk.chunkSet.getMinSectionPosition(), chunk.chunkSet.getMaxSectionPosition());
@@ -821,14 +821,14 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T> {
         }
 
         @Override
-        public void setLightLayer(ChunkHolder chunk, int layer, char[] toSet) {
+        public void setLightLayer(ChunkHolder chunk, int layer, int[] toSet) {
             chunk.getOrCreateSet();
             chunk.delegate = SET;
             chunk.setLightLayer(layer, toSet);
         }
 
         @Override
-        public void setSkyLightLayer(ChunkHolder chunk, int layer, char[] toSet) {
+        public void setSkyLightLayer(ChunkHolder chunk, int layer, int[] toSet) {
             chunk.getOrCreateSet();
             chunk.delegate = SET;
             chunk.setSkyLightLayer(layer, toSet);
@@ -882,14 +882,14 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T> {
         }
 
         @Override
-        public void setLightingToGet(ChunkHolder chunk, char[][] lighting) {
+        public void setLightingToGet(ChunkHolder chunk, int[][] lighting) {
             chunk.getOrCreateGet();
             chunk.delegate = GET;
             chunk.setLightingToGet(lighting, chunk.chunkSet.getMinSectionPosition(), chunk.chunkSet.getMaxSectionPosition());
         }
 
         @Override
-        public void setSkyLightingToGet(ChunkHolder chunk, char[][] lighting) {
+        public void setSkyLightingToGet(ChunkHolder chunk, int[][] lighting) {
             chunk.getOrCreateGet();
             chunk.delegate = GET;
             chunk.setSkyLightingToGet(lighting, chunk.chunkSet.getMinSectionPosition(), chunk.chunkSet.getMaxSectionPosition());
@@ -1196,12 +1196,12 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T> {
     }
 
     @Override
-    public void setLightLayer(int layer, char[] toSet) {
+    public void setLightLayer(int layer, int[] toSet) {
         delegate.setLightLayer(this, layer, toSet);
     }
 
     @Override
-    public void setSkyLightLayer(int layer, char[] toSet) {
+    public void setSkyLightLayer(int layer, int[] toSet) {
         delegate.setSkyLightLayer(this, layer, toSet);
     }
 
@@ -1259,9 +1259,9 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T> {
 
         void setFullBright(ChunkHolder chunk, int layer);
 
-        void setLightLayer(ChunkHolder chunk, int layer, char[] toSet);
+        void setLightLayer(ChunkHolder chunk, int layer, int[] toSet);
 
-        void setSkyLightLayer(ChunkHolder chunk, int layer, char[] toSet);
+        void setSkyLightLayer(ChunkHolder chunk, int layer, int[] toSet);
 
         void setHeightMap(ChunkHolder chunk, HeightMapType type, int[] heightMap);
 
@@ -1277,9 +1277,9 @@ public class ChunkHolder<T extends Future<T>> implements IQueueChunk<T> {
 
         void flushLightToGet(ChunkHolder chunk);
 
-        void setLightingToGet(ChunkHolder chunk, char[][] lighting);
+        void setLightingToGet(ChunkHolder chunk, int[][] lighting);
 
-        void setSkyLightingToGet(ChunkHolder chunk, char[][] lighting);
+        void setSkyLightingToGet(ChunkHolder chunk, int[][] lighting);
 
         void setHeightmapToGet(ChunkHolder chunk, HeightMapType type, int[] data);
 

@@ -15,14 +15,48 @@ public abstract class BukkitBlockMaterial<B, BS> implements BlockMaterial {
     protected final BS blockState;
     private final BlockData blockData;
     private final Material craftMaterial;
-    private final FaweCompoundTag tile;
+    // 32-bit fork: раньше значение считалось в конструкторе. Конструктор
+    // блок-сущности модового блока умеет полезть в конфиг своего мода, который
+    // при сборке реестра ещё не загружен, и тогда наружу летело
+    // IllegalStateException: Cannot get config value before config is loaded,
+    // убивая весь блочный реестр. Теперь лениво и с повторами.
+    private volatile FaweCompoundTag tile;
+    private volatile boolean tileResolved;
+    private int tileAttempts;
+    private static int tileFailuresLogged;
 
     public BukkitBlockMaterial(B block, BS blockState, BlockData blockData) {
         this.block = block;
         this.blockState = blockState;
         this.blockData = blockData;
         this.craftMaterial = this.blockData.getMaterial();
-        this.tile = tileForBlock(block);
+    }
+
+    private FaweCompoundTag tile() {
+        return this.tileResolved ? this.tile : resolveTile();
+    }
+
+    private synchronized FaweCompoundTag resolveTile() {
+        if (this.tileResolved) {
+            return this.tile;
+        }
+        try {
+            this.tile = tileForBlock(this.block);
+            this.tileResolved = true;
+        } catch (Throwable notReadyYet) {
+            this.tile = null;
+            if (++this.tileAttempts >= 3) {
+                this.tileResolved = true;
+                if (tileFailuresLogged < 20) {
+                    tileFailuresLogged++;
+                    java.util.logging.Logger.getLogger("FastAsyncWorldEdit").warning(
+                            "Блок " + this.craftMaterial.getKey()
+                                    + ": данные блок-сущности недоступны (" + notReadyYet
+                                    + "), блок считается без NBT");
+                }
+            }
+        }
+        return this.tile;
     }
 
     protected abstract FaweCompoundTag tileForBlock(B block);
@@ -46,17 +80,17 @@ public abstract class BukkitBlockMaterial<B, BS> implements BlockMaterial {
 
     @Override
     public @Nullable FaweCompoundTag defaultTile() {
-        return this.tile;
+        return tile();
     }
 
     @Override
     public boolean hasContainer() {
-        return this.tile != null;
+        return tile() != null;
     }
 
     @Override
     public boolean isTile() {
-        return this.tile != null;
+        return tile() != null;
     }
 
     @Override

@@ -389,7 +389,7 @@ public final class PaperweightPlatformAdapter extends NMSAdapter {
      */
     public static LevelChunkSection newChunkSection(
             final int layer,
-            final char[] blocks,
+            final int[] blocks,
             CachedBukkitAdapter adapter,
             Registry<Biome> biomeRegistry,
             @Nullable PalettedContainer<Holder<Biome>> biomes
@@ -399,8 +399,8 @@ public final class PaperweightPlatformAdapter extends NMSAdapter {
 
     public static LevelChunkSection newChunkSection(
             final int layer,
-            final IntFunction<char[]> get,
-            char[] set,
+            final IntFunction<int[]> get,
+            int[] set,
             CachedBukkitAdapter adapter,
             Registry<Biome> biomeRegistry,
             @Nullable PalettedContainer<Holder<Biome>> biomes

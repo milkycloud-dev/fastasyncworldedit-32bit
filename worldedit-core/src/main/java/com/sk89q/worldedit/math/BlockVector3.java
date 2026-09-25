@@ -836,8 +836,8 @@ public abstract class BlockVector3 {
         return getBlock(orDefault).getOrdinal();
     }
 
-    public char getOrdinalChar(Extent orDefault) {
-        return (char) getOrdinal(orDefault);
+    public int getOrdinalChar(Extent orDefault) {
+        return (int) getOrdinal(orDefault);
     }
 
     public BlockState getBlock(Extent orDefault) {

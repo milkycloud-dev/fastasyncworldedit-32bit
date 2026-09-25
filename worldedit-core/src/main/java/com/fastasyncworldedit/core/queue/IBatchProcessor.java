@@ -91,7 +91,7 @@ public interface IBatchProcessor {
                 if (layer > minLayer && layer < maxLayer) {
                     continue;
                 }
-                char[] blocks = set.loadIfPresent(layer);
+                int[] blocks = set.loadIfPresent(layer);
                 if (blocks == null) {
                     continue;
                 }
@@ -137,14 +137,14 @@ public interface IBatchProcessor {
                 continue;
             }
             if (layer == minLayer) {
-                char[] arr = set.loadIfPresent(layer);
+                int[] arr = set.loadIfPresent(layer);
                 if (arr != null) {
                     int index = (minY & 15) << 8;
-                    Arrays.fill(arr, index, 4096, (char) BlockTypesCache.ReservedIDs.__RESERVED__);
+                    Arrays.fill(arr, index, 4096, (int) BlockTypesCache.ReservedIDs.__RESERVED__);
                 }
                 set.setBlocks(layer, arr);
             } else if (layer == maxLayer) {
-                char[] arr = set.loadIfPresent(layer);
+                int[] arr = set.loadIfPresent(layer);
                 if (arr != null) {
                     int index = ((maxY + 1) & 15) << 8;
                     for (int i = 0; i < index; i++) {
