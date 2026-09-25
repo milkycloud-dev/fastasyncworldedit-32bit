@@ -12,3 +12,4 @@ Based on FastAsyncWorldEdit 2.15.4.
 - `BukkitBlockMaterial` creates block entities lazily instead of during registry construction.
 - `CachedBukkitAdapter` grows its `Material` tables to the ordinals it actually sees.
 - Only the 1.21 adapter is built.
+- Gradle wrapper 9.7.1: the paperweight 2.0.0 snapshot that FAWE 2.15.4 pulls now requires it.
